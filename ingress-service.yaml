@@ -11,5 +11,5 @@ spec:
   - secretName: tls-secret
   backend:
     # This assumes http-svc exists and routes to healthy endpoints.
-    serviceName: wordpress
+    serviceName: http-svc
     servicePort: 80
