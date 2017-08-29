@@ -1,10 +1,12 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: wordpress
+  name: static-ip-wordpress
   annotations:
     kubernetes.io/ingress.global-static-ip-name: "ateia-kubernetes"
+    kubernetes.io/ingress.class: "gce"
 spec:
   backend:
     serviceName: wordpress
     servicePort: 80
+
