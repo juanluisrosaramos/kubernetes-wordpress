@@ -12,6 +12,10 @@ Set defaults for the gcloud command-line tool
 Create the cluster with the minimum possible nodes
 gcloud container clusters create ateiavlc --num-nodes=3 --disk-size=10  --tags=wp,mysql --machine-type=g1-small 
 
+If you create the cluster with the GCE console (as you cannot create Pre-emptible nodes with the command tool) you can connect to it. Run the following command to retrieve cluster credentials and configure kubectl command-line tool with them:
+
+$ gcloud container clusters get-credentials CLUSTERNAME
+
 Create the persistent storage
 *gcloud compute disks create --size 10GB mysql-disk*
 *gcloud compute disks create --size 10GB wordpress-disk*
@@ -51,7 +55,27 @@ mysql-3368603707-rdq92       1/1       Running   0          1h
 wordpress-3479901767-ztpsr   1/1       Running   0          1h
 
 #### Opening to the world
-We need to create a load balancer (subject to billing) servicewith the command *kubectl create -f https://raw.githubusercontent.com/juanluisrosaramos/kubernetes-wordpress/master/wp-service.yaml* we will use a static ip when we move to production. Make note of the External IP using kubectl get services. 
+
+kubectl expose deployment wordpress --target-port=80  --type=NodePort
+Container Engine makes your Service available on a randomly-selected high port number (e.g. 32640) on all the nodes in your cluster. To make your HTTP(S) web server application publicly accessible, you need to create an Ingress resource.
+
+generate a static (and global) IP  *gcloud compute addresses create NAME-ip --global* and assign this static IP to an **Ingress service**
+kubectl create -f https://raw.githubusercontent.com/juanluisrosaramos/kubernetes-wordpress/master/basic-ingress.yaml
+
+
+Firstly create a **TLS certificate**
+*$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=nginxsvc/O=nginxsvc"*
+Generating a 2048 bit RSA private key writing new private key to 'tls.key'
+Second upload it to kubernetes
+*$ kubectl create secret tls tls-secret --key tls.key --cert tls.crt*
+secret "tls-secret" created
+
+Secondly generate a **Test HTTP Service pod** that generates a NodePort and a Replication Controller We can deploy it as follows *kubectl create -f https://raw.githubusercontent.com/juanluisrosaramos/kubernetes-wordpress/master/http-svc.yaml*
+gcloud compute addresses list --global
+
+Thirdly generate a static (and global) IP  *gcloud compute addresses create NAME-ip --global* and assign this static IP to an **Ingress service**
+
+We need to create a load balancer (subject* to billing) servicewith the command *kubectl create -f https://raw.githubusercontent.com/juanluisrosaramos/kubernetes-wordpress/master/wp-service.yaml* we will use a static ip when we move to production. Make note of the External IP using kubectl get services. 
 At this point we going to Cloud Platform Console -> VPCNetwork -> External IP Addresses and reserve as static the external ip that was reservedd in the previous step and modify it int the wp-service.yaml maniphesto adding *loadBalancerIP:IPADDRESS* in the LoadBalancer specification. Then we redeploy the service with *kubectl apply -f https://raw.githubusercontent.com/juanluisrosaramos/kubernetes-wordpress/master/wp-service.yaml*
 
 ## Migrating from production 
