@@ -6,11 +6,12 @@ metadata:
   name: wp-service
 spec:
   type: LoadBalancer
+  externalIPs:
+  - 35.186.192.108
   ports:
     - port: 80
       targetPort: 80
       protocol: TCP
   selector:
     app: wordpress
-  externalIPs:
-  - 35.186.192.108
+
