@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: wordpress
-    name: wp-service
+  name: wp-service
 spec:
   type: LoadBalancer
   ports:
