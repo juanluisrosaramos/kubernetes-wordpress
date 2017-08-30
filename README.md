@@ -56,7 +56,7 @@ wordpress-3479901767-ztpsr   1/1       Running   0          1h
 
 #### Opening to the world
 
-kubectl expose deployment wordpress --target-port=80  --type=NodePort
+*kubectl expose deployment wordpress --target-port=80  --type=NodePort*
 Container Engine makes your Service available on a randomly-selected high port number (e.g. 32640) on all the nodes in your cluster. To make your HTTP(S) web server application publicly accessible, you need to create an Ingress resource.
 
 generate a static (and global) IP  *gcloud compute addresses create NAME-ip --global* and assign this static IP to an **Ingress service**
