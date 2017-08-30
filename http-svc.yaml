@@ -10,11 +10,11 @@ spec:
   - port: 80
     # This port needs to be available on all nodes in the cluster
     nodePort: 30301
-    targetPort: 8080
+    targetPort: 80
     protocol: TCP
     name: http
   selector:
-    app: http-svc
+    app: wordpress
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -25,13 +25,13 @@ spec:
   template:
     metadata:
       labels:
-        app: http-svc
+        app: wordpress
     spec:
       containers:
       - name: http-svc
         image: gcr.io/google_containers/echoserver:1.8
         ports:
-        - containerPort: 8080
+        - containerPort: 80
         env:
           - name: NODE_NAME
             valueFrom:
