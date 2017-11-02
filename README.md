@@ -3,7 +3,7 @@
 Migrate the installation of a website consisting in WP + Mysql to Kubernetes containers in GCE
 This project is copied from the following [google guide](https://cloud.google.com/container-engine/docs/tutorials/persistent-disk). As the objective of the project is experiment with GCE containers and **see if we can reduce costs** compairing to virtual machines, the new environment will hold a minimum number of containers (3 nodes) starting with the minimum hw resources necessary (memory and cpu) and predemptible VM machines. We also will need two persistent disk for the data (minimum of 10Gb) of the WP and the Database f the 10Gb.
 
-##Results of the experiment
+## Results of the experiment
 Finnally, after testing the kubernetes installation in production the costs nearly doubled the VM architecture. We decided to create the minimum host architecture necessary for the project and the predemptible hosts worked well and cheap but the costs increase due to the load-balancer (needed for having an external IP) provided by GCE and with an excessive cost as it is a very very simple website that doesn't need load balancing etc.. For a simple Wordpress website Kubernetes is not recommended.
 
 ## Configuring kubernetes containerized platform
