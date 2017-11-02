@@ -3,6 +3,9 @@
 Migrate the installation of a website consisting in WP + Mysql to Kubernetes containers in GCE
 This project is copied from the following [google guide](https://cloud.google.com/container-engine/docs/tutorials/persistent-disk). As the objective of the project is experiment with GCE containers and **see if we can reduce costs** compairing to virtual machines, the new environment will hold a minimum number of containers (3 nodes) starting with the minimum hw resources necessary (memory and cpu) and predemptible VM machines. We also will need two persistent disk for the data (minimum of 10Gb) of the WP and the Database f the 10Gb.
 
+##Results of the experiment
+Finnally, after testing the kubernetes installation in production the costs nearly doubled the VM architecture. We decided to create the minimum host architecture necessary for the project and the predemptible hosts worked well and cheap but the costs increase due to the load-balancer (needed for having an external IP) provided by GCE and with an excessive cost as it is a very very simple website that doesn't need load balancing etc.. For a simple Wordpress website Kubernetes is not recommended.
+
 ## Configuring kubernetes containerized platform
 Set defaults for the gcloud command-line tool
 
@@ -55,10 +58,11 @@ mysql-3368603707-rdq92       1/1       Running   0          1h
 wordpress-3479901767-ztpsr   1/1       Running   0          1h
 
 #### Opening to the world
+This step has been the most exhausting and the only difficulty that we find in this project. We tried different options as none seems to work and finnally a load-balancer was used and worked smoothly but it increased the costs of the project to a non acceptable budget (the loadbalance cost was the same as the rest of the project (3 predemptible hosts and on static IP).
 
+**Non working solution**
 *kubectl expose deployment wordpress --target-port=80  --type=NodePort*
 Container Engine makes your Service available on a randomly-selected high port number (e.g. 32640) on all the nodes in your cluster. To make your HTTP(S) web server application publicly accessible, you need to create an Ingress resource.
-
 generate a static (and global) IP  *gcloud compute addresses create NAME-ip --global* and assign this static IP to an **Ingress service**
 kubectl create -f https://raw.githubusercontent.com/juanluisrosaramos/kubernetes-wordpress/master/basic-ingress.yaml
 
